@@ -1,1 +1,265 @@
+package a;
 
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+
+public class Graphics extends Application {
+
+	static boolean x = true;
+	static int player1 = 0;
+	static int player2 = 0;
+	static Button b = new Button("a");
+	static Button b1 = new Button("b");
+	static Button b2 = new Button("c");
+	static Button b3 = new Button("d");
+	static Button b4 = new Button("e");
+	static Button b5 = new Button("f");
+	static Button b6 = new Button("g");
+	static Button b7 = new Button("h");
+	static Button b8 = new Button("i");
+	static Label label = new Label("Score : Player 1: " + player1 + " Player 2: " + player2);
+	static GridPane pane = new GridPane();
+	static Scene scene = new Scene(pane, 316, 316, Color.BLUE);
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		launch(args);
+	}
+
+	@Override
+	public void start(Stage stage) throws Exception {
+		// TODO Auto-generated method stub
+		
+		label.setStyle("-fx-background-color: #76D7C4;");
+		stage.setTitle("Tic Tac Toe");
+		stage.setResizable(false);
+
+		b.setOnAction(e -> {
+			if (x) {
+				b.setText("X");
+				x = false;
+			} else {
+				b.setText("O");
+				x = true;
+			}
+			b.setDisable(true);
+			score();
+		});
+		b1.setOnAction(e -> {
+			if (x) {
+				b1.setText("X");
+				x = false;
+			} else {
+				b1.setText("O");
+				x = true;
+			}
+			b1.setDisable(true);
+			score();
+		});
+		b2.setOnAction(e -> {
+			if (x) {
+				b2.setText("X");
+				x = false;
+			} else {
+				b2.setText("O");
+				x = true;
+			}
+			b2.setDisable(true);
+			score();
+		});
+		b3.setOnAction(e -> {
+			if (x) {
+				b3.setText("X");
+				x = false;
+			} else {
+				b3.setText("O");
+				x = true;
+			}
+			b3.setDisable(true);
+			score();
+		});
+		b4.setOnAction(e -> {
+			if (x) {
+				b4.setText("X");
+				x = false;
+			} else {
+				b4.setText("O");
+				x = true;
+			}
+			b4.setDisable(true);
+			score();
+		});
+		b5.setOnAction(e -> {
+			if (x) {
+				b5.setText("X");
+				x = false;
+			} else {
+				b5.setText("O");
+				x = true;
+			}
+			b5.setDisable(true);
+			score();
+		});
+		b6.setOnAction(e -> {
+			if (x) {
+				b6.setText("X");
+				x = false;
+			} else {
+				b6.setText("O");
+				x = true;
+			}
+			b6.setDisable(true);
+			score();
+		});
+		b7.setOnAction(e -> {
+			if (x) {
+				b7.setText("X");
+				x = false;
+			} else {
+				b7.setText("O");
+				x = true;
+			}
+			b7.setDisable(true);
+			score();
+		});
+		b8.setOnAction(e -> {
+			if (x) {
+				b8.setText("X");
+				x = false;
+			} else {
+				b8.setText("O");
+				x = true;
+			}
+			b8.setDisable(true);
+			score();
+		});
+
+		
+		pane.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
+		pane.setPadding(new Insets(10, 10, 10, 10));
+		pane.setVgap(8);
+		pane.setHgap(8);
+		for (int i = 0; i < 2; i++) {
+			pane.getColumnConstraints().add(new ColumnConstraints(100));
+			pane.getRowConstraints().add(new RowConstraints(100));
+		}
+
+		GridPane.setConstraints(b, 0, 0);
+		GridPane.setConstraints(b1, 1, 0);
+		GridPane.setConstraints(b2, 2, 0);
+		GridPane.setConstraints(b3, 0, 1);
+		GridPane.setConstraints(b4, 1, 1);
+		GridPane.setConstraints(b5, 2, 1);
+		GridPane.setConstraints(b6, 0, 2);
+		GridPane.setConstraints(b7, 1, 2);
+		GridPane.setConstraints(b8, 2, 2);
+		GridPane.setConstraints(label, 0, 4, 3, 1);
+		pane.getChildren().addAll(b, b1, b2, b3, b4, b5, b6, b7, b8, label);
+		
+		stage.setScene(scene);
+		stage.show();
+
+	}
+
+	public static int win(boolean a) {
+		for (int i = 0; i < 9; i++) {
+			if (b.getText() != null && b.getText().equals(b1.getText()) && b.getText().equals(b2.getText())) {
+				if (a) {
+					return 1;
+				} else {
+					return 2;
+				}
+			} else if (b3.getText().equals(b4.getText()) && b4.getText().equals(b5.getText())) {
+				if (a) {
+					return 1;
+				} else {
+					return 2;
+				}
+			} else if (b6.getText().equals(b7.getText()) && b7.getText().equals(b8.getText())) {
+				if (a) {
+					return 1;
+				} else {
+					return 2;
+				}
+			} else if (b1.getText().equals(b4.getText()) && b4.getText().equals(b7.getText())) {
+				if (a) {
+					return 1;
+				} else {
+					return 2;
+				}
+			} else if (b2.getText().equals(b5.getText()) && b5.getText().equals(b8.getText())) {
+				if (a) {
+					return 1;
+				} else {
+					return 2;
+				}
+			} else if (b.getText().equals(b3.getText()) && b6.getText().equals(b.getText())) {
+				if (a) {
+					return 1;
+				} else {
+					return 2;
+				}
+			} else if (b.getText().equals(b4.getText()) && b.getText().equals(b8.getText())) {
+				if (a) {
+					return 1;
+				} else {
+					return 2;
+				}
+			} else if (b2.getText().equals(b4.getText()) && b4.getText().equals(b6.getText())) {
+				if (a) {
+					return 1;
+				} else {
+					return 2;
+				}
+			}
+		}
+		return 0;
+	} 
+	public static void score() {
+		System.out.println("A");
+		int temp = win(x);
+		if(temp == 1) {
+			x = false;
+			player1++;
+			System.out.println("B");
+			reset(b);
+			reset(b1);
+			reset(b2);
+			reset(b3);
+			reset(b4);
+			reset(b5);
+			reset(b6);
+			reset(b7);
+			reset(b8);
+		} else if(temp == 2) {
+			x = true;
+			player2++;
+			reset(b);
+			reset(b1);
+			reset(b2);
+			reset(b3);
+			reset(b4);
+			reset(b5);
+			reset(b6);
+			reset(b7);
+			reset(b8);
+		}
+	}
+	public static void reset(Button b) {
+		b.setText("a");
+		b.setDisable(false);
+	}
+}
