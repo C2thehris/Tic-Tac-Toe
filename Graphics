@@ -1,19 +1,13 @@
 package a;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -22,15 +16,15 @@ public class Graphics extends Application {
 	static boolean x = true;
 	static int player1 = 0;
 	static int player2 = 0;
-	static Button b = new Button("a");
-	static Button b1 = new Button("b");
-	static Button b2 = new Button("c");
-	static Button b3 = new Button("d");
-	static Button b4 = new Button("e");
-	static Button b5 = new Button("f");
-	static Button b6 = new Button("g");
-	static Button b7 = new Button("h");
-	static Button b8 = new Button("i");
+	static Button b = new Button("");
+	static Button b1 = new Button("");
+	static Button b2 = new Button("");
+	static Button b3 = new Button("");
+	static Button b4 = new Button("");
+	static Button b5 = new Button("");
+	static Button b6 = new Button("");
+	static Button b7 = new Button("");
+	static Button b8 = new Button("");
 	static Label label = new Label("Score : Player 1: " + player1 + " Player 2: " + player2);
 	static GridPane pane = new GridPane();
 	static Scene scene = new Scene(pane, 316, 316, Color.BLUE);
@@ -176,65 +170,67 @@ public class Graphics extends Application {
 
 	public static int win(boolean a) {
 		for (int i = 0; i < 9; i++) {
-			if (b.getText() != null && b.getText().equals(b1.getText()) && b.getText().equals(b2.getText())) {
+			if (!b.getText().isEmpty() && b.getText() != null && b.getText().equals(b1.getText()) && b.getText().equals(b2.getText())) {
 				if (a) {
 					return 1;
 				} else {
 					return 2;
 				}
-			} else if (b3.getText().equals(b4.getText()) && b4.getText().equals(b5.getText())) {
+			} else if (!b3.getText().isEmpty() && b3.getText().equals(b4.getText()) && b4.getText().equals(b5.getText())) {
 				if (a) {
 					return 1;
 				} else {
 					return 2;
 				}
-			} else if (b6.getText().equals(b7.getText()) && b7.getText().equals(b8.getText())) {
+			} else if (!b6.getText().isEmpty() && b6.getText().equals(b7.getText()) && b7.getText().equals(b8.getText())) {
 				if (a) {
 					return 1;
 				} else {
 					return 2;
 				}
-			} else if (b1.getText().equals(b4.getText()) && b4.getText().equals(b7.getText())) {
+			} else if (!b1.getText().isEmpty() && b1.getText().equals(b4.getText()) && b4.getText().equals(b7.getText())) {
 				if (a) {
 					return 1;
 				} else {
 					return 2;
 				}
-			} else if (b2.getText().equals(b5.getText()) && b5.getText().equals(b8.getText())) {
+			} else if (!b2.getText().isEmpty() && b2.getText().equals(b5.getText()) && b5.getText().equals(b8.getText())) {
 				if (a) {
 					return 1;
 				} else {
 					return 2;
 				}
-			} else if (b.getText().equals(b3.getText()) && b6.getText().equals(b.getText())) {
+			} else if (!b.getText().isEmpty() && b.getText().equals(b3.getText()) && b6.getText().equals(b.getText())) {
 				if (a) {
 					return 1;
 				} else {
 					return 2;
 				}
-			} else if (b.getText().equals(b4.getText()) && b.getText().equals(b8.getText())) {
+			} else if (!b.getText().isEmpty() && b.getText().equals(b4.getText()) && b.getText().equals(b8.getText())) {
 				if (a) {
 					return 1;
 				} else {
 					return 2;
 				}
-			} else if (b2.getText().equals(b4.getText()) && b4.getText().equals(b6.getText())) {
+			} else if (!b2.getText().isEmpty() && b2.getText().equals(b4.getText()) && b4.getText().equals(b6.getText())) {
 				if (a) {
 					return 1;
 				} else {
 					return 2;
 				}
+			} else if(!b.getText().isEmpty() && !b1.getText().isEmpty() && !b2.getText().isEmpty() && !b3.getText().isEmpty()
+				&& !b4.getText().isEmpty() && !b5.getText().isEmpty() && !b6.getText().isEmpty() && !b7.getText().isEmpty() && 
+				!b8.getText().isEmpty()) {
+				return 3;
 			}
 		}
 		return 0;
 	} 
 	public static void score() {
-		System.out.println("A");
 		int temp = win(x);
 		if(temp == 1) {
 			x = false;
-			player1++;
-			System.out.println("B");
+			label.setAccessibleHelp("Score : Player 1: " + player1 + " Player 2: " + ++player2);
 			reset(b);
 			reset(b1);
 			reset(b2);
@@ -246,7 +242,17 @@ public class Graphics extends Application {
 			reset(b8);
 		} else if(temp == 2) {
 			x = true;
-			player2++;
+			label.setText("Score : Player 1: " + ++player1 + " Player 2: " + player2);
+			reset(b);
+			reset(b1);
+			reset(b2);
+			reset(b3);
+			reset(b4);
+			reset(b5);
+			reset(b6);
+			reset(b7);
+			reset(b8);
+		} else if(temp == 3) {
 			reset(b);
 			reset(b1);
 			reset(b2);
@@ -259,7 +265,7 @@ public class Graphics extends Application {
 		}
 	}
 	public static void reset(Button b) {
-		b.setText("a");
+		b.setText("");
 		b.setDisable(false);
 	}
 }
