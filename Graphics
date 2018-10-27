@@ -1,6 +1,7 @@
 package a;
 
 import javafx.application.Application;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 
 public class Graphics extends Application {
 
+	static int bnum = 0;
 	static boolean x = true;
 	static int player1 = 0;
 	static int player2 = 0;
@@ -27,210 +29,114 @@ public class Graphics extends Application {
 	static Button b8 = new Button("");
 	static Label label = new Label("Score : Player 1: " + player1 + " Player 2: " + player2);
 	static GridPane pane = new GridPane();
-	static Scene scene = new Scene(pane, 316, 316, Color.BLUE);
+	static Scene scene = new Scene(pane, 324, 432, Color.BLUE);
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		launch(args);
 	}
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		// TODO Auto-generated method stub
-		
+
 		label.setStyle("-fx-background-color: #76D7C4;");
 		stage.setTitle("Tic Tac Toe");
 		stage.setResizable(false);
 
-		b.setOnAction(e -> {
-			if (x) {
-				b.setText("X");
-				x = false;
-			} else {
-				b.setText("O");
-				x = true;
-			}
-			b.setDisable(true);
-			score();
-		});
-		b1.setOnAction(e -> {
-			if (x) {
-				b1.setText("X");
-				x = false;
-			} else {
-				b1.setText("O");
-				x = true;
-			}
-			b1.setDisable(true);
-			score();
-		});
-		b2.setOnAction(e -> {
-			if (x) {
-				b2.setText("X");
-				x = false;
-			} else {
-				b2.setText("O");
-				x = true;
-			}
-			b2.setDisable(true);
-			score();
-		});
-		b3.setOnAction(e -> {
-			if (x) {
-				b3.setText("X");
-				x = false;
-			} else {
-				b3.setText("O");
-				x = true;
-			}
-			b3.setDisable(true);
-			score();
-		});
-		b4.setOnAction(e -> {
-			if (x) {
-				b4.setText("X");
-				x = false;
-			} else {
-				b4.setText("O");
-				x = true;
-			}
-			b4.setDisable(true);
-			score();
-		});
-		b5.setOnAction(e -> {
-			if (x) {
-				b5.setText("X");
-				x = false;
-			} else {
-				b5.setText("O");
-				x = true;
-			}
-			b5.setDisable(true);
-			score();
-		});
-		b6.setOnAction(e -> {
-			if (x) {
-				b6.setText("X");
-				x = false;
-			} else {
-				b6.setText("O");
-				x = true;
-			}
-			b6.setDisable(true);
-			score();
-		});
-		b7.setOnAction(e -> {
-			if (x) {
-				b7.setText("X");
-				x = false;
-			} else {
-				b7.setText("O");
-				x = true;
-			}
-			b7.setDisable(true);
-			score();
-		});
-		b8.setOnAction(e -> {
-			if (x) {
-				b8.setText("X");
-				x = false;
-			} else {
-				b8.setText("O");
-				x = true;
-			}
-			b8.setDisable(true);
-			score();
-		});
+		standardize(b);
+		standardize(b1);
+		standardize(b2);
+		standardize(b3);
+		standardize(b4);
+		standardize(b5);
+		standardize(b6);
+		standardize(b7);
+		standardize(b8);
 
-		
 		pane.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
 		pane.setPadding(new Insets(10, 10, 10, 10));
 		pane.setVgap(8);
 		pane.setHgap(8);
-		for (int i = 0; i < 2; i++) {
+
+		for (int i = 0; i < 3; i++) {
 			pane.getColumnConstraints().add(new ColumnConstraints(100));
 			pane.getRowConstraints().add(new RowConstraints(100));
 		}
 
-		GridPane.setConstraints(b, 0, 0);
-		GridPane.setConstraints(b1, 1, 0);
-		GridPane.setConstraints(b2, 2, 0);
-		GridPane.setConstraints(b3, 0, 1);
-		GridPane.setConstraints(b4, 1, 1);
-		GridPane.setConstraints(b5, 2, 1);
-		GridPane.setConstraints(b6, 0, 2);
-		GridPane.setConstraints(b7, 1, 2);
-		GridPane.setConstraints(b8, 2, 2);
 		GridPane.setConstraints(label, 0, 4, 3, 1);
+		GridPane.setHalignment(label, HPos.CENTER);
 		pane.getChildren().addAll(b, b1, b2, b3, b4, b5, b6, b7, b8, label);
-		
+
 		stage.setScene(scene);
 		stage.show();
 
 	}
 
 	public static int win(boolean a) {
-		for (int i = 0; i < 9; i++) {
-			if (!b.getText().isEmpty() && b.getText() != null && b.getText().equals(b1.getText()) && b.getText().equals(b2.getText())) {
-				if (a) {
-					return 1;
-				} else {
-					return 2;
-				}
-			} else if (!b3.getText().isEmpty() && b3.getText().equals(b4.getText()) && b4.getText().equals(b5.getText())) {
-				if (a) {
-					return 1;
-				} else {
-					return 2;
-				}
-			} else if (!b6.getText().isEmpty() && b6.getText().equals(b7.getText()) && b7.getText().equals(b8.getText())) {
-				if (a) {
-					return 1;
-				} else {
-					return 2;
-				}
-			} else if (!b1.getText().isEmpty() && b1.getText().equals(b4.getText()) && b4.getText().equals(b7.getText())) {
-				if (a) {
-					return 1;
-				} else {
-					return 2;
-				}
-			} else if (!b2.getText().isEmpty() && b2.getText().equals(b5.getText()) && b5.getText().equals(b8.getText())) {
-				if (a) {
-					return 1;
-				} else {
-					return 2;
-				}
-			} else if (!b.getText().isEmpty() && b.getText().equals(b3.getText()) && b6.getText().equals(b.getText())) {
-				if (a) {
-					return 1;
-				} else {
-					return 2;
-				}
-			} else if (!b.getText().isEmpty() && b.getText().equals(b4.getText()) && b.getText().equals(b8.getText())) {
-				if (a) {
-					return 1;
-				} else {
-					return 2;
-				}
-			} else if (!b2.getText().isEmpty() && b2.getText().equals(b4.getText()) && b4.getText().equals(b6.getText())) {
-				if (a) {
-					return 1;
-				} else {
-					return 2;
-				}
-			} else if(!b.getText().isEmpty() && !b1.getText().isEmpty() && !b2.getText().isEmpty() && !b3.getText().isEmpty()
-				&& !b4.getText().isEmpty() && !b5.getText().isEmpty() && !b6.getText().isEmpty() && !b7.getText().isEmpty() && 
-				!b8.getText().isEmpty()) {
-				return 3;
+		int c = 0;
+		if (!b.getText().isEmpty() && b.getText() != null && b.getText().equals(b1.getText())
+				&& b.getText().equals(b2.getText())) {
+			if (a) {
+				c = 1;
+			} else {
+				c = 2;
 			}
+		} else if (!b3.getText().isEmpty() && b3.getText().equals(b4.getText()) && b4.getText().equals(b5.getText())) {
+			if (a) {
+				c = 1;
+			} else {
+				c = 2;
+			}
+		} else if (!b6.getText().isEmpty() && b6.getText().equals(b7.getText()) && b7.getText().equals(b8.getText())) {
+			if (a) {
+				c = 1;
+			} else {
+				c = 2;
+			}
+		} else if (!b1.getText().isEmpty() && b1.getText().equals(b4.getText()) && b4.getText().equals(b7.getText())) {
+			if (a) {
+				c = 1;
+			} else {
+				c = 2;
+			}
+		} else if (!b2.getText().isEmpty() && b2.getText().equals(b5.getText()) && b5.getText().equals(b8.getText())) {
+			if (a) {
+				c = 1;
+			} else {
+				c = 2;
+			}
+		} else if (!b.getText().isEmpty() && b.getText().equals(b3.getText()) && b6.getText().equals(b.getText())) {
+			if (a) {
+				c = 1;
+			} else {
+				c = 2;
+			}
+		} else if (!b.getText().isEmpty() && b.getText().equals(b4.getText()) && b.getText().equals(b8.getText())) {
+			if (a) {
+				c = 1;
+			} else {
+				c = 2;
+			}
+		} else if (!b2.getText().isEmpty() && b2.getText().equals(b4.getText()) && b4.getText().equals(b6.getText())) {
+			if (a) {
+				c = 1;
+			} else {
+				c = 2;
+			}
+		} else if (!b.getText().isEmpty() && !b1.getText().isEmpty() && !b2.getText().isEmpty()
+				&& !b3.getText().isEmpty() && !b4.getText().isEmpty() && !b5.getText().isEmpty()
+				&& !b6.getText().isEmpty() && !b7.getText().isEmpty() && !b8.getText().isEmpty()) {
+			c = 3;
 		}
-		return 0;
-	} 
+		return c;
+	}
+
 	public static void score() {
 		int temp = win(x);
-		if(temp == 1) {
+		if (temp == 1) {
 			x = false;
-			label.setAccessibleHelp("Score : Player 1: " + player1 + " Player 2: " + ++player2);
+			label.setText("Score : Player 1: " + player1 + " Player 2: " + ++player2);
 			reset(b);
 			reset(b1);
 			reset(b2);
@@ -240,7 +146,7 @@ public class Graphics extends Application {
 			reset(b6);
 			reset(b7);
 			reset(b8);
-		} else if(temp == 2) {
+		} else if (temp == 2) {
 			x = true;
 			label.setText("Score : Player 1: " + ++player1 + " Player 2: " + player2);
 			reset(b);
@@ -252,7 +158,7 @@ public class Graphics extends Application {
 			reset(b6);
 			reset(b7);
 			reset(b8);
-		} else if(temp == 3) {
+		} else if (temp == 3) {
 			reset(b);
 			reset(b1);
 			reset(b2);
@@ -264,8 +170,37 @@ public class Graphics extends Application {
 			reset(b8);
 		}
 	}
+
+	public static void standardize(Button b) {
+
+		b.setPrefSize(75, 75);
+		b.setStyle("-fx-font: 37 arial;");
+		b.setOnAction(e -> {
+			if (x) {
+				b.setText("X");
+				x = false;
+			} else {
+				b.setText("O");
+				x = true;
+			}
+			b.setMouseTransparent(true);
+			score();
+		});
+		if (bnum % 3 == 0) {
+			GridPane.setConstraints(b, 0, (bnum / 3));
+			bnum++;
+		} else if (bnum % 3 == 1) {
+			GridPane.setConstraints(b, 1, (bnum / 3));
+			bnum++;
+		} else {
+			GridPane.setConstraints(b, 2, (bnum / 3));
+			bnum++;
+		}
+	}
+
 	public static void reset(Button b) {
 		b.setText("");
 		b.setDisable(false);
+		b.setMouseTransparent(false);
 	}
 }
