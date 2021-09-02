@@ -1,0 +1,23 @@
+.player-option {
+    -fx-background-color: RED;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 24px;
+    -fx-background-insets: 5px;
+}
+
+HBox {
+    -fx-pref-width: 100%;
+    -fx-max-height: 10%;
+    -fx-alignment: center;
+}
+
+Button:focus {
+    -fx-skin: "com.sun.javafx.scene.control.skin.ButtonSkin";
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 5, 5, 4, 3;
+}
+
+.root {
+    -fx-background-color: WHITE;
+}

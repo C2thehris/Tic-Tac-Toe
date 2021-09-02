@@ -1,15 +1,13 @@
-import java.util.ArrayList;
-
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class Graphics extends Application {
@@ -18,120 +16,149 @@ public class Graphics extends Application {
 		PLAYER1, PLAYER2, DRAW, NONE
 	}
 
+	enum Bot {
+		IMPOSSIBLE, MEDIUM, EASY, PLAYER
+	}
+
+	static final int HEIGHT = 540;
+	static final int WIDTH = 640;
+
 	static final String PLAYER1_TEXT = "Player 1: ";
 	static final String PLAYER2_TEXT = " Player 2: ";
 
 	int player1Score = 0;
 	int player2Score = 0;
 	Player turn = Player.PLAYER1;
+	Bot difficulty = Bot.PLAYER;
 
-	ArrayList<ArrayList<Button>> buttons = new ArrayList<>();
+	Player[][] board = new Player[3][3];
 	Label scoreboard = new Label(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
-	GridPane pane = new GridPane();
-	Scene scene = new Scene(pane, 324, 432, Color.BLUE);
+	Button[][] buttons = new Button[3][3];
 
 	public static void main(String[] args) {
 		launch(args);
 	}
 
 	@Override
-	public void start(Stage stage) {
-		scoreboard.setStyle("-fx-background-color: WHITE;");
-		stage.setTitle("Tic Tac Toe");
-		stage.setResizable(false);
+	public void start(Stage window) {
+		window.setTitle("Tic Tac Toe");
+		window.setResizable(false);
 
-		for (int i = 0; i < 3; ++i) {
-			ArrayList<Button> row = new ArrayList<>();
-			for (int j = 0; j < 3; ++j) {
-				Button b = new Button();
-				buttonInit(b, i * 3 + j);
-				row.add(b);
-			}
-			buttons.add(row);
-		}
+		BorderPane startLayout = new BorderPane();
+		HBox top = new HBox(new Label("Tic-Tac-ToeFX"));
+		HBox bottom = new HBox();
 
-		pane.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
-		pane.setPadding(new Insets(10, 10, 10, 10));
-		pane.setVgap(8);
-		pane.setHgap(8);
+		Button singlePlayer = new Button("One Player");
+		singlePlayer.getStyleClass().add("player-option");
+		singlePlayer.setOnAction(e -> {
+			difficultyLevel(window);
+		});
 
-		for (int i = 0; i < 3; ++i) {
-			pane.getColumnConstraints().add(new ColumnConstraints(100));
-			pane.getRowConstraints().add(new RowConstraints(100));
-		}
-		GridPane.setConstraints(scoreboard, 0, 4, 3, 1);
-		GridPane.setHalignment(scoreboard, HPos.CENTER);
+		Button twoPlayer = new Button("Two Player");
+		twoPlayer.getStyleClass().add("player-option");
+		twoPlayer.setOnAction(e -> {
+			displayBoard(window);
+		});
 
-		for (ArrayList<Button> row : buttons) {
-			pane.getChildren().addAll(row);
-		}
-		pane.getChildren().add(scoreboard);
+		bottom.getChildren().addAll(singlePlayer, twoPlayer);
 
-		stage.setScene(scene);
-		stage.show();
+		startLayout.setTop(top);
+		startLayout.setBottom(bottom);
+
+		Scene startScene = new Scene(startLayout, WIDTH, HEIGHT);
+		startScene.getStylesheets().add("css/start.css");
+
+		window.setScene(startScene);
+		window.show();
 	}
 
-	boolean matching(ArrayList<Button> btns) {
-		String first = btns.get(0).getText();
-		for (Button button : btns) {
-			if (!button.getText().equals(first))
-				return false;
+	void difficultyLevel(Stage window) {
+
+	}
+
+	void displayBoard(Stage window) {
+		scoreboard.setStyle("-fx-background-color: WHITE");
+		for (int i = 0; i < 3; ++i) {
+			Button[] row = new Button[3];
+			Player[] boardRow = new Player[3];
+			for (int j = 0; j < 3; ++j) {
+				Button b = new Button();
+				boardRow[j] = Player.NONE;
+				buttonInit(b, i * 3 + j);
+				row[j] = b;
+			}
+			board[i] = boardRow;
+			buttons[i] = row;
 		}
-		return true;
+
+		BorderPane pane = new BorderPane();
+		HBox bottom = new HBox();
+		GridPane gamePane = new GridPane();
+
+		pane.setCenter(gamePane);
+		pane.setBottom(bottom);
+		gamePane.setAlignment(Pos.CENTER);
+
+		Scene boardPane = new Scene(pane, WIDTH, HEIGHT);
+
+		gamePane.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
+		gamePane.setPadding(new Insets(10, 10, 10, 10));
+
+		GridPane.setConstraints(scoreboard, 0, 4, 3, 1); // Node, column, Row, columnSpan, RowSpan
+		GridPane.setHalignment(scoreboard, HPos.CENTER);
+
+		for (Button[] row : buttons) {
+			gamePane.getChildren().addAll(row);
+		}
+
+		scoreboard.setStyle("-fx-font: 24 Arial");
+		bottom.getChildren().add(scoreboard);
+		bottom.setAlignment(Pos.CENTER);
+
+		window.setScene(boardPane);
+	}
+
+	Player matching(Player[] line) {
+		Player first = line[0];
+		if (first == Player.NONE)
+			return Player.NONE;
+
+		if (line[1] == first && line[2] == first) {
+			return first;
+		}
+		return Player.NONE;
 	}
 
 	Player checkRow(int rowNum) {
-		ArrayList<Button> row = buttons.get(rowNum);
-		if (row.get(0).getText().isEmpty())
-			return Player.NONE;
-
-		if (matching(row)) {
-			if (row.get(0).getText().equals("X"))
-				return Player.PLAYER1;
-			return Player.PLAYER2;
-		}
-
-		return Player.NONE;
+		Player[] row = board[rowNum];
+		return matching(row);
 	}
 
 	Player checkColumn(int colNum) {
-		ArrayList<Button> column = new ArrayList<>();
+		Player[] column = new Player[3];
 
-		for (ArrayList<Button> row : buttons) {
-			column.add(row.get(colNum));
-		}
-		if (column.get(0).getText().isEmpty())
-			return Player.NONE;
-
-		if (matching(column)) {
-			if (column.get(0).getText().equals("X"))
-				return Player.PLAYER1;
-			return Player.PLAYER2;
+		for (int i = 0; i < 3; ++i) {
+			column[i] = board[colNum][i];
 		}
 
-		return Player.NONE;
+		return matching(column);
 	}
 
 	Player checkDiags() {
-		ArrayList<Button> topLeft = new ArrayList<>();
-		ArrayList<Button> bottomLeft = new ArrayList<>();
+		Player[] topLeft = new Player[3];
+		Player[] bottomLeft = new Player[3];
 
 		for (int i = 0; i < 3; ++i) {
-			topLeft.add(buttons.get(i).get(i));
-			bottomLeft.add(buttons.get(2 - i).get(i));
+			topLeft[i] = board[i][i];
+			bottomLeft[i] = board[2 - i][i];
 		}
 
-		if (matching(topLeft) && !topLeft.get(0).getText().isEmpty()) {
-			if (topLeft.get(0).getText().equals("X"))
-				return Player.PLAYER1;
-			return Player.PLAYER2;
-		} else if (matching(bottomLeft) && !bottomLeft.get(0).getText().isEmpty()) {
-			if (bottomLeft.get(0).getText().equals("X"))
-				return Player.PLAYER1;
-			return Player.PLAYER2;
+		Player top = matching(topLeft);
+		if (top != Player.NONE) {
+			return top;
 		}
 
-		return Player.NONE;
+		return matching(bottomLeft);
 	}
 
 	Player winner() {
@@ -149,10 +176,11 @@ public class Graphics extends Application {
 		if (winner != Player.NONE)
 			return winner;
 
-		for (ArrayList<Button> row : buttons) {
-			for (Button b : row) {
-				if (b.getText().isEmpty())
+		for (Player[] row : board) {
+			for (Player p : row) {
+				if (p == Player.NONE) {
 					return Player.NONE;
+				}
 			}
 		}
 
@@ -168,7 +196,7 @@ public class Graphics extends Application {
 			scoreboard.setText(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
 		}
 
-		for (ArrayList<Button> row : buttons) {
+		for (Button[] row : buttons) {
 			for (Button b : row) {
 				reset(b);
 			}
@@ -176,14 +204,19 @@ public class Graphics extends Application {
 	}
 
 	void buttonInit(Button b, int buttonNumber) {
-		b.setPrefSize(75, 75);
-		b.setStyle("-fx-font: 36 arial;");
+		b.setPrefSize(160, 160);
+		b.setStyle("-fx-font: 75 arial; -fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
+
+		int col = buttonNumber % 3;
+		int row = buttonNumber / 3;
 		b.setOnAction(e -> {
 			if (turn == Player.PLAYER1) {
 				b.setText("X");
+				board[col][row] = Player.PLAYER1;
 				turn = Player.PLAYER2;
 			} else {
 				b.setText("O");
+				board[col][row] = Player.PLAYER2;
 				turn = Player.PLAYER1;
 			}
 			b.setMouseTransparent(true);
@@ -193,9 +226,6 @@ public class Graphics extends Application {
 				score(winner);
 			}
 		});
-
-		int col = buttonNumber % 3;
-		int row = buttonNumber / 3;
 		GridPane.setConstraints(b, col, row);
 	}
 
