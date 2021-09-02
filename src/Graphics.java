@@ -23,8 +23,11 @@ public class Graphics extends Application {
 	static final int HEIGHT = 540;
 	static final int WIDTH = 640;
 
+	static final String TITLE = "Tic-Tac-ToeFX";
 	static final String PLAYER1_TEXT = "Player 1: ";
 	static final String PLAYER2_TEXT = " Player 2: ";
+
+	static final Label TITLE_LABEL = new Label(TITLE);
 
 	int player1Score = 0;
 	int player2Score = 0;
@@ -32,8 +35,8 @@ public class Graphics extends Application {
 	Bot difficulty = Bot.PLAYER;
 
 	Player[][] board = new Player[3][3];
-	Label scoreboard = new Label(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
 	Button[][] buttons = new Button[3][3];
+	Label scoreboard = new Label(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
 
 	public static void main(String[] args) {
 		launch(args);
@@ -41,11 +44,13 @@ public class Graphics extends Application {
 
 	@Override
 	public void start(Stage window) {
-		window.setTitle("Tic Tac Toe");
+		window.setTitle(TITLE);
 		window.setResizable(false);
 
+		TITLE_LABEL.setStyle("-fx-font: 48 Arial; -fx-text-fill: RED;");
+
 		BorderPane startLayout = new BorderPane();
-		HBox top = new HBox(new Label("Tic-Tac-ToeFX"));
+		HBox top = new HBox();
 		HBox bottom = new HBox();
 
 		Button singlePlayer = new Button("One Player");
@@ -59,6 +64,8 @@ public class Graphics extends Application {
 		twoPlayer.setOnAction(e -> {
 			displayBoard(window);
 		});
+
+		top.getChildren().add(TITLE_LABEL);
 
 		bottom.getChildren().addAll(singlePlayer, twoPlayer);
 
@@ -78,6 +85,7 @@ public class Graphics extends Application {
 
 	void displayBoard(Stage window) {
 		scoreboard.setStyle("-fx-background-color: WHITE");
+
 		for (int i = 0; i < 3; ++i) {
 			Button[] row = new Button[3];
 			Player[] boardRow = new Player[3];
@@ -92,16 +100,17 @@ public class Graphics extends Application {
 		}
 
 		BorderPane pane = new BorderPane();
+		HBox top = new HBox();
 		HBox bottom = new HBox();
 		GridPane gamePane = new GridPane();
 
+		pane.setTop(top);
 		pane.setCenter(gamePane);
 		pane.setBottom(bottom);
 		gamePane.setAlignment(Pos.CENTER);
 
 		Scene boardPane = new Scene(pane, WIDTH, HEIGHT);
 
-		gamePane.setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
 		gamePane.setPadding(new Insets(10, 10, 10, 10));
 
 		GridPane.setConstraints(scoreboard, 0, 4, 3, 1); // Node, column, Row, columnSpan, RowSpan
@@ -111,9 +120,13 @@ public class Graphics extends Application {
 			gamePane.getChildren().addAll(row);
 		}
 
-		scoreboard.setStyle("-fx-font: 24 Arial");
+		top.getChildren().add(TITLE_LABEL);
+
+		scoreboard.setStyle("-fx-font: 24 Arial;");
+		pane.setStyle("-fx-background-color: lightgray");
 		bottom.getChildren().add(scoreboard);
 		bottom.setAlignment(Pos.CENTER);
+		top.setAlignment(Pos.CENTER);
 
 		window.setScene(boardPane);
 	}
@@ -138,7 +151,7 @@ public class Graphics extends Application {
 		Player[] column = new Player[3];
 
 		for (int i = 0; i < 3; ++i) {
-			column[i] = board[colNum][i];
+			column[i] = board[i][colNum];
 		}
 
 		return matching(column);
@@ -161,12 +174,24 @@ public class Graphics extends Application {
 		return matching(bottomLeft);
 	}
 
+	boolean searchClear() {
+		for (Player[] row : board) {
+			for (Player p : row) {
+				if (p == Player.NONE) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	Player winner() {
 		Player winner;
 		for (int i = 0; i < 3; ++i) {
 			winner = checkRow(i);
 			if (winner != Player.NONE)
 				return winner;
+
 			winner = checkColumn(i);
 			if (winner != Player.NONE)
 				return winner;
@@ -176,15 +201,18 @@ public class Graphics extends Application {
 		if (winner != Player.NONE)
 			return winner;
 
-		for (Player[] row : board) {
-			for (Player p : row) {
-				if (p == Player.NONE) {
-					return Player.NONE;
-				}
-			}
-		}
+		if (searchClear())
+			return Player.NONE;
 
 		return Player.DRAW;
+	}
+
+	void clearBoard() {
+		for (Player[] row : board) {
+			for (int i = 0; i < row.length; ++i) {
+				row[i] = Player.NONE;
+			}
+		}
 	}
 
 	void score(Player gameWinner) {
@@ -196,6 +224,7 @@ public class Graphics extends Application {
 			scoreboard.setText(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
 		}
 
+		clearBoard();
 		for (Button[] row : buttons) {
 			for (Button b : row) {
 				reset(b);
