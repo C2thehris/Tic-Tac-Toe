@@ -12,14 +12,6 @@ import javafx.stage.Stage;
 
 public class Graphics extends Application {
 
-	enum Player {
-		PLAYER1, PLAYER2, DRAW, NONE
-	}
-
-	enum Bot {
-		IMPOSSIBLE, MEDIUM, EASY, PLAYER
-	}
-
 	static final int HEIGHT = 540;
 	static final int WIDTH = 640;
 
@@ -29,17 +21,26 @@ public class Graphics extends Application {
 
 	static final Label TITLE_LABEL = new Label(TITLE);
 
-	int player1Score = 0;
-	int player2Score = 0;
-	Player turn = Player.PLAYER1;
-	Bot difficulty = Bot.PLAYER;
-
-	Player[][] board = new Player[3][3];
-	Button[][] buttons = new Button[3][3];
-	Label scoreboard = new Label(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
+	static boolean computer = false;
+	static Button[][] buttons = new Button[3][3];
+	static Label scoreboard = new Label();
+	private static Game game;
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	public static void updateScoreboard(int player1Score, int player2Score) {
+		scoreboard.setText(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
+	}
+
+	public static void setButtonText(int row, int col, Player mover) {
+		buttons[row][col].setMouseTransparent(true);
+		if (mover == Player.PLAYER1) {
+			buttons[row][col].setText("X");
+		} else {
+			buttons[row][col].setText("O");
+		}
 	}
 
 	@Override
@@ -55,14 +56,13 @@ public class Graphics extends Application {
 
 		Button singlePlayer = new Button("One Player");
 		singlePlayer.getStyleClass().add("player-option");
-		singlePlayer.setOnAction(e -> {
-			difficultyLevel(window);
-		});
+		singlePlayer.setOnAction(e -> difficultyLevel(window));
 
 		Button twoPlayer = new Button("Two Player");
 		twoPlayer.getStyleClass().add("player-option");
 		twoPlayer.setOnAction(e -> {
 			displayBoard(window);
+			game = new Game(Bot.Difficulty.PLAYER);
 		});
 
 		top.getChildren().add(TITLE_LABEL);
@@ -79,23 +79,51 @@ public class Graphics extends Application {
 		window.show();
 	}
 
-	void difficultyLevel(Stage window) {
+	private static void difficultyLevel(Stage window) {
+		BorderPane startLayout = new BorderPane();
+		HBox top = new HBox();
+		HBox bottom = new HBox();
 
+		Button easy = new Button("Easy");
+		easy.setOnAction(e -> {
+			Graphics.game = new Game(Bot.Difficulty.EASY);
+			displayBoard(window);
+		});
+
+		Button medium = new Button("Medium");
+		medium.setOnAction(e -> {
+			Graphics.game = new Game(Bot.Difficulty.MEDIUM);
+			displayBoard(window);
+		});
+
+		Button impossible = new Button("Impossible");
+		impossible.setOnAction(e -> {
+			Graphics.game = new Game(Bot.Difficulty.IMPOSSIBLE);
+			displayBoard(window);
+		});
+
+		top.getChildren().add(TITLE_LABEL);
+
+		bottom.getChildren().addAll(easy, medium, impossible);
+
+		startLayout.setTop(top);
+		startLayout.setBottom(bottom);
+
+		Scene startScene = new Scene(startLayout, WIDTH, HEIGHT);
+		startScene.getStylesheets().add("css/start.css");
+		window.setScene(startScene);
 	}
 
-	void displayBoard(Stage window) {
+	private static void displayBoard(Stage window) {
 		scoreboard.setStyle("-fx-background-color: WHITE");
 
 		for (int i = 0; i < 3; ++i) {
 			Button[] row = new Button[3];
-			Player[] boardRow = new Player[3];
 			for (int j = 0; j < 3; ++j) {
 				Button b = new Button();
-				boardRow[j] = Player.NONE;
 				buttonInit(b, i * 3 + j);
 				row[j] = b;
 			}
-			board[i] = boardRow;
 			buttons[i] = row;
 		}
 
@@ -128,103 +156,24 @@ public class Graphics extends Application {
 		bottom.setAlignment(Pos.CENTER);
 		top.setAlignment(Pos.CENTER);
 
+		gamePane.getStylesheets().add("css/start.css");
+
 		window.setScene(boardPane);
 	}
 
-	Player matching(Player[] line) {
-		Player first = line[0];
-		if (first == Player.NONE)
-			return Player.NONE;
+	private static void buttonInit(Button b, int buttonNumber) {
+		b.setPrefSize(160, 160);
+		b.setStyle("-fx-font: 75 arial; -fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
 
-		if (line[1] == first && line[2] == first) {
-			return first;
-		}
-		return Player.NONE;
+		int col = buttonNumber % 3;
+		int row = buttonNumber / 3;
+		b.setOnAction(e -> {
+			game.move(row, col);
+		});
+		GridPane.setConstraints(b, col, row);
 	}
 
-	Player checkRow(int rowNum) {
-		Player[] row = board[rowNum];
-		return matching(row);
-	}
-
-	Player checkColumn(int colNum) {
-		Player[] column = new Player[3];
-
-		for (int i = 0; i < 3; ++i) {
-			column[i] = board[i][colNum];
-		}
-
-		return matching(column);
-	}
-
-	Player checkDiags() {
-		Player[] topLeft = new Player[3];
-		Player[] bottomLeft = new Player[3];
-
-		for (int i = 0; i < 3; ++i) {
-			topLeft[i] = board[i][i];
-			bottomLeft[i] = board[2 - i][i];
-		}
-
-		Player top = matching(topLeft);
-		if (top != Player.NONE) {
-			return top;
-		}
-
-		return matching(bottomLeft);
-	}
-
-	boolean searchClear() {
-		for (Player[] row : board) {
-			for (Player p : row) {
-				if (p == Player.NONE) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	Player winner() {
-		Player winner;
-		for (int i = 0; i < 3; ++i) {
-			winner = checkRow(i);
-			if (winner != Player.NONE)
-				return winner;
-
-			winner = checkColumn(i);
-			if (winner != Player.NONE)
-				return winner;
-		}
-
-		winner = checkDiags();
-		if (winner != Player.NONE)
-			return winner;
-
-		if (searchClear())
-			return Player.NONE;
-
-		return Player.DRAW;
-	}
-
-	void clearBoard() {
-		for (Player[] row : board) {
-			for (int i = 0; i < row.length; ++i) {
-				row[i] = Player.NONE;
-			}
-		}
-	}
-
-	void score(Player gameWinner) {
-		if (gameWinner == Player.PLAYER1) {
-			++player1Score;
-			scoreboard.setText(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
-		} else if (gameWinner == Player.PLAYER2) {
-			++player2Score;
-			scoreboard.setText(PLAYER1_TEXT + player1Score + PLAYER2_TEXT + player2Score);
-		}
-
-		clearBoard();
+	public static void resetButtons() {
 		for (Button[] row : buttons) {
 			for (Button b : row) {
 				reset(b);
@@ -232,33 +181,7 @@ public class Graphics extends Application {
 		}
 	}
 
-	void buttonInit(Button b, int buttonNumber) {
-		b.setPrefSize(160, 160);
-		b.setStyle("-fx-font: 75 arial; -fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
-
-		int col = buttonNumber % 3;
-		int row = buttonNumber / 3;
-		b.setOnAction(e -> {
-			if (turn == Player.PLAYER1) {
-				b.setText("X");
-				board[col][row] = Player.PLAYER1;
-				turn = Player.PLAYER2;
-			} else {
-				b.setText("O");
-				board[col][row] = Player.PLAYER2;
-				turn = Player.PLAYER1;
-			}
-			b.setMouseTransparent(true);
-
-			Player winner = winner();
-			if (winner != Player.NONE) {
-				score(winner);
-			}
-		});
-		GridPane.setConstraints(b, col, row);
-	}
-
-	void reset(Button b) {
+	private static void reset(Button b) {
 		b.setText("");
 		b.setDisable(false);
 		b.setMouseTransparent(false);
