@@ -21,7 +21,6 @@ public class Graphics extends Application {
 
 	static final Label TITLE_LABEL = new Label(TITLE);
 
-	static boolean computer = false;
 	static Button[][] buttons = new Button[3][3];
 	static Label scoreboard = new Label();
 	private static Game game;
