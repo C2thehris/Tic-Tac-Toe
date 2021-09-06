@@ -8,6 +8,7 @@ class Bot {
         EASY, MEDIUM, IMPOSSIBLE, PLAYER
     }
 
+    Random r = new Random();
     Difficulty difficulty;
     Player[][] board;
 
@@ -21,40 +22,49 @@ class Bot {
         if (this.difficulty == Difficulty.EASY) {
             return randomMove();
         } else if (this.difficulty == Difficulty.MEDIUM) {
-            return makeThree();
+            choice = makeThree(Player.PLAYER2);
+            if (choice.getKey() != -1) {
+                return choice;
+            }
+            choice = makeThree(Player.PLAYER1);
+
+            if (choice.getKey() != -1) {
+                return choice;
+            }
+            return randomMove();
         }
 
         return choice;
     }
 
-    private Pair<Integer, Integer> makeThree() {
+    private Pair<Integer, Integer> makeThree(Player p) {
         int blankPos = -1;
         for (int i = 0; i < 3; ++i) {
             Player[] line = getRow(i);
-            blankPos = getBlankInThree(line);
+            blankPos = getBlankInThree(line, p);
             if (blankPos != -1) {
                 return new Pair<>(i, blankPos);
             }
 
             line = getColumn(i);
-            blankPos = getBlankInThree(line);
+            blankPos = getBlankInThree(line, p);
             if (blankPos != -1) {
                 return new Pair<>(blankPos, i);
             }
         }
 
         Pair<Player[], Player[]> diags = getDiags();
-        blankPos = getBlankInThree(diags.getKey());
+        blankPos = getBlankInThree(diags.getKey(), p);
         if (blankPos != -1) {
             return new Pair<>(blankPos, blankPos);
         }
 
-        blankPos = getBlankInThree(diags.getValue());
+        blankPos = getBlankInThree(diags.getValue(), p);
         if (blankPos != -1) {
             return new Pair<>(2 - blankPos, blankPos);
         }
 
-        return randomMove();
+        return new Pair<>(-1, -1);
     }
 
     private Pair<Integer, Integer> randomMove() {
@@ -67,12 +77,11 @@ class Bot {
             }
         }
 
-        Random r = new Random();
         int random = (r.nextInt(choices.size()));
         return choices.get(random);
     }
 
-    private int getBlankInThree(Player[] line) {
+    private int getBlankInThree(Player[] line, Player p) {
         int player1 = 0;
         int player2 = 0;
         int blankPos = -1;
@@ -91,10 +100,8 @@ class Bot {
             }
         }
 
-        if (player1 == 2 || player2 == 2) {
-            if (blankPos != -1) {
-                return blankPos;
-            }
+        if (p == Player.PLAYER1 && player1 == 2 || p == Player.PLAYER2 && player2 == 2) {
+            return blankPos;
         }
 
         return -1;

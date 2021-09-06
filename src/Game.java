@@ -1,3 +1,7 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 class Game {
@@ -16,57 +20,62 @@ class Game {
         }
     }
 
+    public boolean computerOpponent() {
+        return (bot.difficulty == Bot.Difficulty.PLAYER);
+    }
+
     public void move(int row, int col) {
         board[row][col] = this.turn;
         Graphics.setButtonText(row, col, this.turn);
+        boolean win = scoreGame();
 
-        Player winner = scoreGame();
-        if (winner != Player.NONE) {
-            if (winner == Player.PLAYER1) {
-                ++player1Score;
-            } else if (winner == Player.PLAYER2) {
-                ++player2Score;
-            }
-
-            Graphics.updateScoreboard(this.player1Score, this.player2Score);
-            Graphics.resetButtons();
+        if (this.turn == Player.PLAYER1) {
+            this.turn = Player.PLAYER2;
+        } else {
+            this.turn = Player.PLAYER1;
         }
 
-        if (this.bot.difficulty != Bot.Difficulty.PLAYER) {
+        if (this.bot.difficulty != Bot.Difficulty.PLAYER && !win) {
             Pair<Integer, Integer> botMove = bot.move(board);
             board[botMove.getKey()][botMove.getValue()] = Player.PLAYER2;
-            Graphics.setButtonText(botMove.getKey(), botMove.getValue(), Player.PLAYER2);
-        } else {
-            if (this.turn == Player.PLAYER1) {
-                this.turn = Player.PLAYER2;
-            } else {
-                this.turn = Player.PLAYER1;
-            }
-        }
-
-        winner = scoreGame();
-        if (winner != Player.NONE) {
-            if (winner == Player.PLAYER1) {
-                ++player1Score;
-            } else if (winner == Player.PLAYER2) {
-                ++player2Score;
-            }
-
-            Graphics.updateScoreboard(this.player1Score, this.player2Score);
-            Graphics.resetButtons();
+            Platform.runLater(() -> Graphics.setButtonText(botMove.getKey(), botMove.getValue(), Player.PLAYER2));
+            scoreGame();
+            this.turn = Player.PLAYER1;
         }
     }
 
-    public Player scoreGame() {
+    public boolean scoreGame() {
         Player winner = winner();
 
-        if (winner == Player.NONE) {
-            return Player.NONE;
+        if (winner != Player.NONE) {
+            if (winner == Player.PLAYER1) {
+                ++player1Score;
+            } else if (winner == Player.PLAYER2) {
+                ++player2Score;
+            }
+            clearBoard();
+            final KeyFrame updateScore = new KeyFrame(Duration.seconds(0),
+                    e -> Graphics.updateScoreboard(this.player1Score, this.player2Score));
+            final KeyFrame lock = new KeyFrame(Duration.seconds(0), e -> Graphics.lockBoard());
+            final KeyFrame clear = new KeyFrame(Duration.seconds(2), e -> {
+                Graphics.resetButtons();
+            });
+            final KeyFrame startNext = new KeyFrame(Duration.seconds(2.02), e -> {
+                if (this.turn == Player.PLAYER2) {
+                    Pair<Integer, Integer> botMove = bot.move(board);
+                    board[botMove.getKey()][botMove.getValue()] = Player.PLAYER2;
+                    Platform.runLater(
+                            () -> Graphics.setButtonText(botMove.getKey(), botMove.getValue(), Player.PLAYER2));
+                    this.turn = Player.PLAYER1;
+                }
+            });
+
+            Timeline restartGame = new Timeline(lock, updateScore, clear, startNext);
+            Platform.runLater(restartGame::play);
+
+            return true;
         }
-
-        clearBoard();
-
-        return winner;
+        return false;
     }
 
     private Player winner() {
